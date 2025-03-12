@@ -26,6 +26,19 @@ start hazelcast
 
 run all 4 microservices in separate terminals
 
+i fixed code a little bit while servers were running to check if duplicated messages still work for separate logging services, so msg1 was sent
+
+multiple times
+
+{./images/1.jpg}
+
+{./images/2.jpg}
+
+{./images/3.jpg}
+
+{./images/4.jpg}
+
+
 
 
 
