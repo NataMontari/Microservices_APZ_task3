@@ -35,7 +35,7 @@ def get_messages_service():
         raise Exception("No available ports for messages service or wrong config")
     return instances[0]
 
-def randomConnect():
+def randomConnect(port = False):
     logging_services = get_logging_service()
     random.shuffle(logging_services)
     for service in logging_services:
@@ -43,6 +43,8 @@ def randomConnect():
             channel = grpc.insecure_channel(service)
             stub = logging_pb2_grpc.LoggingServiceStub(channel)
             stub.GetMessages(logging_pb2.Empty())
+            if port == True:
+                return stub, service
             return stub
         except Exception:
             continue
@@ -56,6 +58,7 @@ def get_messages_service_response():
         # Request to messages_service
         messages_service = get_messages_service()
         response = requests.get(f"http://{messages_service}/get_message")
+        logging.info(f"Received response from messages service at {messages_service}: {response.text}")
         return response.text  # Returns a text answer
     except requests.RequestException as e:
         return f"Error while calling messages-service: {e}"
@@ -66,10 +69,12 @@ def log_message_with_retry(message_uuid: str, message: str):
     try:
         print(f"Attempting to send message: {message}")
         
-        stub = randomConnect()
+        stub, port = randomConnect(port = True)
         request = logging_pb2.LogRequest(id=message_uuid, message=message)
         response = stub.LogMessage(request)  # call gRPC
         
+        # logging.info(f"Sent message to logging service at {port}, response: {response.status}")
+
         if response.status == "Message logged successfully":
             print(f" Message successfully logged: {response.status}")
             return {"status": "success", "message": response.status}
@@ -104,14 +109,15 @@ def handle_post():
 @app.route("/get_messages", methods = ["GET"])
 def handle_get():
     try:
-        stub = randomConnect()
+        stub, port = randomConnect(port = True)
         response = stub.GetMessages(logging_pb2.Empty())
         logging_messages = list(response.messages)
 
         messages_service_response = get_messages_service_response()
 
-        combined_response = {"logged_messages": logging_messages, "message_from_service": messages_service_response} 
+        combined_response = {"logged_messages": logging_messages, "message_from_service": messages_service_response, "port": port} 
 
+        # logging.info(f"Retrieved messages from logging service at {stub}")
         return jsonify(combined_response)
     except grpc.RpcError as e:
         return jsonify(error=f"Service error: {e}"), 500

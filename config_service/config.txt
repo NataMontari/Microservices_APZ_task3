@@ -1,0 +1,2 @@
+logging-service = 8082, 8083, 8084
+messages-service = 8081

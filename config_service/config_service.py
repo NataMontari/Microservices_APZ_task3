@@ -28,7 +28,7 @@ def get_services():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Config Server")
-    parser.add_argument("--config", type=str, default="config.ini", help="Path to config file")
+    parser.add_argument("--config", type=str, default="config.txt", help="Path to config file")
     args = parser.parse_args()
 
     config_file = args.config

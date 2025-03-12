@@ -1,2 +1,0 @@
-logging-service = localhost:8082, localhost:8083, localhost:8084
-messages-service = localhost:8081

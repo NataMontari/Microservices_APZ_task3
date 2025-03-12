@@ -2,4 +2,4 @@
 
 # Send POST request
 echo -e "\nSending POST request..."
-curl -X POST http://localhost:8080/send_message -H "Content-Type: application/json" -d '{"message": "msg1"}'
+curl -X POST http://localhost:8080/send_message -H "Content-Type: application/json" -d '{"message": "msg10"}'
